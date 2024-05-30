@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  padding: 0;
+ font-family: cursive;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#root{
+  font-family: cursive;
+}
+code {
+  font-family: cursive
+    monospace;
+}

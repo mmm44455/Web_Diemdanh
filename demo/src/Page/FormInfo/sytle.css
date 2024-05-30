@@ -1,0 +1,15 @@
+/* Tạo hoặc cập nhật tệp CSS, ví dụ: FormInfo.css */
+
+.form-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%; /* Đặt chiều cao phù hợp */
+    width: 100%; /* Đặt chiều rộng phù hợp */
+  }
+  
+  .form-info .ant-card {
+    display: inline-block; /* Đặt thẻ Card ở giữa */
+  }
+  
