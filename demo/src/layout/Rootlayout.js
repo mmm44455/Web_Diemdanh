@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate} from 'react-router-dom';
 import { FaRegUserCircle } from "react-icons/fa";
-import { Modal, Card, Button,Tooltip  } from 'antd';
+import {  Card, Button,Tooltip  } from 'antd';
 import {
   DesktopOutlined,
   UserOutlined,
@@ -16,8 +16,7 @@ import FormInfo from '../Page/FormInfo';
 import TitleUser from '../Page/TitleUser'
 const { Header, Content, Footer, Sider } = Layout;
 
-function getItem(label, key, icon, children,path) {
-  console.log("Path in getItem:", path);
+function getItem(label, key, icon,path) {
   return {
     key,
     icon,
@@ -60,29 +59,28 @@ const RootLayout = () => {
   switch (userRole) {
     case 'admin':
       items = [
-        getItem('Trang chủ', '1', <PieChartOutlined />, null, '/'),
-        getItem('Tạo tài khoản', '2', <UserAddOutlined />, null, '/create-account'),
+        getItem('Trang chủ', '1', <PieChartOutlined />, '/'),
+        getItem('Tạo tài khoản', '2', <UserAddOutlined />, '/create-account'),
       ];
       break;
     case 'Sinh vien':
       items = [
-        getItem('Trang chủ', '1', <PieChartOutlined />, null, '/'),
-        getItem('Thời khoá biểu', '2', <DesktopOutlined />, null, '/tkb'),
+        getItem('Trang chủ', '1', <PieChartOutlined />, '/'),
+        getItem('Thời khoá biểu', '2', <DesktopOutlined />, '/tkb'),
       ];
       break;
     case 'Giao vien':
       items = [
-        getItem('Trang chủ', '1', <PieChartOutlined />, null, '/'),
-        getItem('Thời khoá biểu', '2', <DesktopOutlined />, null, '/tkb'),
-        getItem('Lớp chủ nhiệm', '3', <TeamOutlined />, null, '/class'),
-        getItem('Điểm danh', '4', <UserOutlined />, null, '/diemdanh'),
-        getItem('Test', '5', <UserOutlined />, null, '/test')
+        getItem('Trang chủ', '1', <PieChartOutlined />, '/'),
+        getItem('Thời khoá biểu', '2', <DesktopOutlined />, '/tkb'),
+        getItem('Lớp chủ nhiệm', '3', <TeamOutlined />, '/class'),
+        getItem('Điểm danh', '4', <UserOutlined />, '/diemdanh'),
+        getItem('Test', '5', <UserOutlined />, '/test')
       ];
       break;
   }
   
   useEffect(() => {
-    console.log("Items:", items);
   }, [items]);
 
   return (
@@ -113,10 +111,10 @@ const RootLayout = () => {
                     <Button type="primary" onClick={onLogout}>Đăng xuất</Button>
                   </Card>
                 }
-                visible={showTooltip}
-                onVisibleChange={visible => setShowTooltip(visible)}
+                open={showTooltip}
+                onOpenChange={visible => setShowTooltip(visible)}
                 placement="bottomRight"
-                arrowPointAtCenter
+                arrow={{ pointAtCenter: true }}
                 trigger="click"
               >
                 <FaRegUserCircle className="avatar" onClick={() => setShowTooltip(!showTooltip)} />

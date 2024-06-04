@@ -57,3 +57,12 @@
 .title-info .ant-modal-header>.ant-modal-title{
     font-size:20px
 }
+.button_diem{
+  display: flex;
+  flex-direction: row;
+  align-items: self-end;
+  justify-content: flex-end;
+  Button{
+    margin-right: 10px;
+  }
+}

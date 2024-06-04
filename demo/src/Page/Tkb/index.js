@@ -7,7 +7,7 @@ import viLocale from '@fullcalendar/core/locales/vi';
 import getUserInfo from '../../common/Api/ApiTkb';
 import { Tooltip } from 'react-tooltip';
 import { format } from 'date-fns';
-import { Modal } from 'antd';
+import { Modal,Button } from 'antd';
 import EventDetailForm from '../../common/component/FormAntDesign'
 import './style.css';
 import { useNavigate} from 'react-router-dom';
@@ -30,14 +30,10 @@ const TKB = () => {
     try {
       setLoading(true);
       let data;
-
-      // Kiểm tra xem có dữ liệu được lưu trong cache không
       if (cachedData) {
         data = cachedData;
       } else {
-        // Nếu không có dữ liệu trong cache, gọi API để lấy dữ liệu mới
         data = await getUserInfo(username);
-        // Lưu dữ liệu vào cache
         setCachedData(data);
       }
 
@@ -99,6 +95,14 @@ const TKB = () => {
   const handEventDiem = ()=>{
       nav('/test')
   }
+  const isEventEnded = (endDateTime) => {
+    const currentDateTime = new Date();
+    const [day, month, yearAndTime] = endDateTime.split('/');
+    const [year, time] = yearAndTime.split('T');
+    const formattedDate1String = `${year}-${month}-${day}T${time}`; 
+    const date1 = new Date(formattedDate1String);
+    return date1 < currentDateTime;
+  };
   return (
     <div>
       {loading ? (
@@ -135,14 +139,21 @@ const TKB = () => {
       )}
       {modalVisible && (
         <Modal
-          visible={modalVisible}
+        open={modalVisible}
           title="Thông tin buổi học"
           onCancel={() => setModalVisible(false)}
           footer={null}
           className='title-info'
         >
           <EventDetailForm eventDetail={eventDetail}></EventDetailForm>
-         {role ==='Giao vien'&&(<button onClick={handEventDiem}>Dien danh</button>)}
+          {role === 'Giao vien' && (
+           <div className='button_diem'>
+           {!isEventEnded(`${eventDetail.NgayHoc}T${eventDetail.EndTime}:00`) && (
+             <Button type="primary" onClick={handEventDiem}>Điểm danh</Button>
+           )}
+           <Button type="primary" danger>Danh sách điểm danh</Button>
+         </div>
+         )}
         </Modal>
       )}
     </div>
