@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate} from 'react-router-dom';
 import { FaRegUserCircle } from "react-icons/fa";
-import { Modal, Card, Avatar, Button } from 'antd';
+import { Modal, Card, Button,Tooltip  } from 'antd';
 import {
   DesktopOutlined,
   UserOutlined,
@@ -34,15 +34,8 @@ const getUserRole = () => {
 
 const RootLayout = () => {
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
-
-  const handleShowModal = () => {
-    setShowModal(true);
-  };
-
-  const handleCancel = () => {
-    setShowModal(false);
-  };
+  const [showTooltip, setShowTooltip] = useState(false);
+  
   const handleMenuClick = (path) => {
     navigate(path);
   };
@@ -113,18 +106,21 @@ const RootLayout = () => {
             </div>
             <div className="user-profile">
               <TitleUser></TitleUser>
-              <FaRegUserCircle className="avatar" onClick={handleShowModal} />
-              <Modal
-                title="Thông tin người dùng"
-                visible={showModal}
-                onCancel={handleCancel}
-                footer={null}
+              <Tooltip
+                title={
+                  <Card style={{ textAlign: 'center' }}>
+                    <FormInfo />
+                    <Button type="primary" onClick={onLogout}>Đăng xuất</Button>
+                  </Card>
+                }
+                visible={showTooltip}
+                onVisibleChange={visible => setShowTooltip(visible)}
+                placement="bottomRight"
+                arrowPointAtCenter
+                trigger="click"
               >
-                <Card style={{ textAlign: 'center' }}>
-                  <FormInfo></FormInfo>
-                  <Button type="primary" onClick={onLogout}>Đăng xuất</Button>
-                </Card>
-              </Modal>
+                <FaRegUserCircle className="avatar" onClick={() => setShowTooltip(!showTooltip)} />
+              </Tooltip>
             </div>
           </div>
         </Header>

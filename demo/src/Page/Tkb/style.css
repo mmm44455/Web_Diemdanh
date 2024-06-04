@@ -1,0 +1,59 @@
+/* style.css */
+.custom-event {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 5px;
+  background-color: lightgreen;
+  border: 1px solid blue;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: pre-wrap;
+  height: 100%; /* Đảm bảo sự kiện chiếm toàn bộ chiều cao của khung */
+}
+
+.custom-event span {
+  display: block;
+}
+.fc-daygrid-body  > table{
+  display: none;
+}
+
+.fc-direction-ltr{
+  font-family: cursive;
+}
+.fc .fc-event, .fc .fc-event-dot {
+  z-index: 1;
+}
+
+.fc .fc-event:hover {
+  z-index: 2;
+}
+
+.react-tooltip {
+  z-index: 9999 !important;
+}
+
+.react-tooltip > div {
+  background-color: #333;
+  color: #fff;
+  border-radius: 4px;
+  padding: 10px;
+  text-align: left;
+}
+.title-info{
+  font-family: cursive;
+}
+.title-info .ant-modal-close{
+  background-color: rgb(255, 72, 0);
+}
+.title-info .ant-modal-close:hover{
+  background-color: red;
+}
+.title-info .ant-modal-header{
+  text-align: center;
+}
+.title-info .ant-modal-header>.ant-modal-title{
+    font-size:20px
+}

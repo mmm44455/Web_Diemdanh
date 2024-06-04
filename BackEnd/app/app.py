@@ -156,7 +156,8 @@ async def get_tkb(username: str):
                 "StartTime": start_time.strftime("%H:%M") if start_time else None,
                 "EndTime": end_time.strftime("%H:%M") if end_time else None,
                 "NgayHoc": ngay_hoc.strftime("%Y-%m-%d") if ngay_hoc else None,
-                "Phong": row[6]
+                "Phong": row[6],
+                "LopSv":row[7]
             }
             tkb_list.append(tkb_dict)
         # Đóng kết nối

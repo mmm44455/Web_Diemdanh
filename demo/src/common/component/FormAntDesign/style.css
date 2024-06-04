@@ -1,0 +1,17 @@
+/* EventDetailForm styles */
+.event-detail-form {
+    max-width: 600px;
+  
+  }
+  .event-detail-form .ant-form-item-label > label {
+    font-family: cursive !important; /* Đảm bảo kiểu chữ cho nhãn */
+    font-weight: bold;
+    color: #333;
+  }
+.input-ant{
+  background: none;
+  border: none;
+}
+.event-detail-form .ant-form-item{
+  margin-bottom:10px;
+}
