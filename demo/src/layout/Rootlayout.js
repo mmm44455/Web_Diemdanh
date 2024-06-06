@@ -75,7 +75,7 @@ const RootLayout = () => {
         getItem('Thời khoá biểu', '2', <DesktopOutlined />, '/tkb'),
         getItem('Lớp chủ nhiệm', '3', <TeamOutlined />, '/class'),
         getItem('Điểm danh', '4', <UserOutlined />, '/diemdanh'),
-        getItem('Test', '5', <UserOutlined />, '/test')
+        getItem('Danh sách điểm danh', '5', <UserOutlined />, '/default-page')
       ];
       break;
   }

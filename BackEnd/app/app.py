@@ -157,7 +157,9 @@ async def get_tkb(username: str):
                 "EndTime": end_time.strftime("%H:%M") if end_time else None,
                 "NgayHoc": ngay_hoc.strftime("%Y-%m-%d") if ngay_hoc else None,
                 "Phong": row[6],
-                "LopSv":row[7]
+                "LopSv":row[7],
+                "MaLop":row[8],
+                "TenLop":row[9]
             }
             tkb_list.append(tkb_dict)
         # Đóng kết nối
@@ -169,6 +171,46 @@ async def get_tkb(username: str):
         # Nếu có lỗi, trả về lỗi 500 và thông báo lỗi
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+class AttendanceRecord(BaseModel):
+    MaSV: str
+    name: str
+    gioitinh: Optional[str]
+    LopSv: str
+    NgayHoc:str
+    ThoiGianDen: Optional[str]
+    TrangThaiDiemDanh: str
+
+@app.get("/get-list/",response_model=List[AttendanceRecord])
+async def get_attendance(date : str,MaMon: str,StartTime: str ,MaLop: str):
+    try:
+            connection = connect_to_database()
+            cursor = connection.cursor()
+            # Call the stored procedure
+            cursor.execute("EXEC AttendanceStudent @date = ?, @MaMon = ?, @Starttime = ?,@MaLop = ?", date, MaMon, StartTime,MaLop)
+            
+            # Fetch all the results
+            rows = cursor.fetchall()
+            for row in rows:
+                print(row)
+            # Map the results to the AttendanceRecord model
+            results = [
+                AttendanceRecord(
+                    MaSV=row[0],
+                    name = row[1],
+                    gioitinh = row[2],
+                    LopSv = row[3],
+                    NgayHoc = row[4],
+                    ThoiGianDen=row[5].strftime('%Y-%m-%d %H:%M:%S') if row[5] else None,
+                    TrangThaiDiemDanh=row[6]
+                ) for row in rows
+            ]
+
+            return results
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

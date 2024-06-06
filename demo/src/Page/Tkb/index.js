@@ -5,7 +5,6 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import viLocale from '@fullcalendar/core/locales/vi';
 import getUserInfo from '../../common/Api/ApiTkb';
-import { Tooltip } from 'react-tooltip';
 import { format } from 'date-fns';
 import { Modal,Button } from 'antd';
 import EventDetailForm from '../../common/component/FormAntDesign'
@@ -14,7 +13,6 @@ import { useNavigate} from 'react-router-dom';
 
 const TKB = () => {
   const [events, setEvents] = useState([]);
-  const [tooltipContent, setTooltipContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cachedData, setCachedData] = useState(null); 
   const username = localStorage.getItem('username');
@@ -50,7 +48,9 @@ const TKB = () => {
           StartTime: event.StartTime,
           EndTime: event.EndTime,
           NgayHoc: event.NgayHoc,
-          LopSv: event.LopSv
+          LopSv: event.LopSv,
+          MaLop:event.MaLop,
+          TenLop:event.TenLop
         }
       }));
       setEvents(formattedData);
@@ -61,24 +61,9 @@ const TKB = () => {
     }
   };
 
-  const handleEventMouseEnter = (eventInfo) => {
-    const { MaMon,TenMon, Phong, TenGV, StartTime, EndTime, NgayHoc, LopSv } = eventInfo.event.extendedProps;
-    const tooltipHtml = `<div><b>Mã Môn:</b> ${MaMon}</div>
-                        <div><b>Tên môn :</b> ${TenMon}</div>
-                        <div><b>Phòng:</b> ${Phong}</div>
-                        <div><b>Giảng Viên:</b> ${TenGV}</div>
-                        <div><b>Nhóm :</b> ${LopSv}</div>
-                        <div><b>Ngày học :</b> ${format(new Date(NgayHoc), 'dd/MM/yyyy')}</div>
-                        <div><b>Bắt đầu:</b> ${StartTime}</div><div>
-                        <b>Kết thúc:</b> ${EndTime}</div>`;
-    setTooltipContent(tooltipHtml);
-  };
 
-  const handleEventMouseLeave = () => {
-    setTooltipContent(null);
-  };
   const handleEventClick = (clickInfo) => {
-    const { MaMon,TenMon, Phong, TenGV, StartTime, EndTime, NgayHoc, LopSv } = clickInfo.event.extendedProps;
+    const { MaMon,TenMon, Phong, TenGV, StartTime, EndTime, NgayHoc, LopSv,MaLop,TenLop } = clickInfo.event.extendedProps;
     const detail = {
       MaMon,
       TenMon,
@@ -87,14 +72,27 @@ const TKB = () => {
       NgayHoc: format(new Date(NgayHoc), 'dd/MM/yyyy'),
       StartTime,
       EndTime,
-      LopSv
+      LopSv,
+      MaLop,
+      TenLop
     };
     setEventDetail(detail);
     setModalVisible(true);
   };
   const handEventDiem = ()=>{
-      nav('/test')
+      nav('/diemdanh')
   }
+  const handClickList = ()=>{
+    if (eventDetail) {
+      const startTime = ` ${eventDetail.StartTime}:00`;
+      const MaLop = `${eventDetail.MaLop}`;
+      const MaMon = `${eventDetail.MaMon}`;
+      const date = `${eventDetail.NgayHoc}`;
+      nav('/test', { state: { MaLop: MaLop, StartTime: startTime, date: date, MaMon: MaMon } });
+    } else {
+      nav('/default-page');
+    }
+  }   
   const isEventEnded = (endDateTime) => {
     const currentDateTime = new Date();
     const [day, month, yearAndTime] = endDateTime.split('/');
@@ -120,8 +118,6 @@ const TKB = () => {
             today: 'Hôm nay'
           }}
           events={events}
-          eventMouseEnter={handleEventMouseEnter}
-          eventMouseLeave={handleEventMouseLeave}
           eventClick={handleEventClick} 
           height={600}
           eventContent={renderEventContent}
@@ -132,11 +128,7 @@ const TKB = () => {
         />
 
       )}
-      {tooltipContent && (
-        <Tooltip id="tooltip" place="top" type="blue" effect="float" html={true}>
-          {tooltipContent}
-        </Tooltip>
-      )}
+      
       {modalVisible && (
         <Modal
         open={modalVisible}
@@ -145,13 +137,14 @@ const TKB = () => {
           footer={null}
           className='title-info'
         >
-          <EventDetailForm eventDetail={eventDetail}></EventDetailForm>
+          <EventDetailForm eventDetail={eventDetail} role={role}></EventDetailForm>
           {role === 'Giao vien' && (
            <div className='button_diem'>
            {!isEventEnded(`${eventDetail.NgayHoc}T${eventDetail.EndTime}:00`) && (
              <Button type="primary" onClick={handEventDiem}>Điểm danh</Button>
            )}
-           <Button type="primary" danger>Danh sách điểm danh</Button>
+           <Button type="primary" danger onClick={handClickList} 
+           >Danh sách điểm danh</Button>
          </div>
          )}
         </Modal>
@@ -162,19 +155,8 @@ const TKB = () => {
 
 // Hàm render nội dung sự kiện
 const renderEventContent = (eventInfo) => {
-  const { MaMon,TenMon, Phong, TenGV, StartTime, EndTime, NgayHoc, LopSv } = eventInfo.event.extendedProps;
   return (
-    <div
-      data-tooltip-id="tooltip"
-      data-tooltip-html={`<div><b>Mã Môn:</b> ${MaMon}</div>
-                          <div><b>Tên môn:</b> ${TenMon}</div>
-                          <div><b>Phòng:</b> ${Phong}</div>
-                          <div><b>Giảng Viên:</b> ${TenGV}</div>
-                          <div><b>Nhóm :</b> ${LopSv}</div>
-                          <div><b>Ngày học :</b> ${NgayHoc}</div>
-                          <div><b>Bắt đầu:</b> ${StartTime}</div><div>
-                          <b>Kết thúc:</b> ${EndTime}</div>`}
-    >
+    <div>
       <b>{eventInfo.timeText}</b>
       <br />
       <i>{eventInfo.event.title.split('\n').map((line, index) => (
