@@ -88,7 +88,8 @@ const TKB = () => {
       const MaLop = `${eventDetail.MaLop}`;
       const MaMon = `${eventDetail.MaMon}`;
       const date = `${eventDetail.NgayHoc}`;
-      nav('/test', { state: { MaLop: MaLop, StartTime: startTime, date: date, MaMon: MaMon } });
+      const TenMon = `${eventDetail.TenMon}`;
+      nav('/test', { state: { MaLop: MaLop, StartTime: startTime, date: date, MaMon: MaMon ,TenMon:TenMon} });
     } else {
       nav('/default-page');
     }
@@ -143,8 +144,7 @@ const TKB = () => {
            {!isEventEnded(`${eventDetail.NgayHoc}T${eventDetail.EndTime}:00`) && (
              <Button type="primary" onClick={handEventDiem}>Điểm danh</Button>
            )}
-           <Button type="primary" danger onClick={handClickList} 
-           >Danh sách điểm danh</Button>
+           <Button type="primary" danger onClick={handClickList} >Danh sách điểm danh</Button>
          </div>
          )}
         </Modal>

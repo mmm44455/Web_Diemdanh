@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate} from 'react-router-dom';
 import { FaRegUserCircle } from "react-icons/fa";
+import { FaAddressBook } from "react-icons/fa";
 import {  Card, Button,Tooltip  } from 'antd';
 import {
   DesktopOutlined,
@@ -55,7 +56,7 @@ const RootLayout = () => {
 
   const userRole = getUserRole(); // Hàm getUserRole() trả về vai trò của người dùng
 
-  let items = [];
+  var items = [];
   switch (userRole) {
     case 'admin':
       items = [
@@ -75,7 +76,7 @@ const RootLayout = () => {
         getItem('Thời khoá biểu', '2', <DesktopOutlined />, '/tkb'),
         getItem('Lớp chủ nhiệm', '3', <TeamOutlined />, '/class'),
         getItem('Điểm danh', '4', <UserOutlined />, '/diemdanh'),
-        getItem('Danh sách điểm danh', '5', <UserOutlined />, '/default-page')
+        getItem('Danh sách môn học', '5',<FaAddressBook /> , '/default-page')
       ];
       break;
   }
@@ -85,7 +86,9 @@ const RootLayout = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} width={220}
+      className='sider'
+      >
         <Menu theme="dark" defaultSelectedKeys={['0']} mode="inline">
       {(items || []).map((item, index) => (
       <Menu.Item key={index} icon={item.icon} onClick={() => handleMenuClick(item.path)}>
@@ -96,7 +99,7 @@ const RootLayout = () => {
 
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: '#fff' }}>
+        <Header style={{ padding: 0, background: '#fff' }} className='header'>
           <div className="demo-logo-vertical" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '100%', width: '100%' }}>
             <div className='demo_name'>
               <Logo></Logo>

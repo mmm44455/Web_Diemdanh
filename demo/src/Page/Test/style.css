@@ -1,0 +1,27 @@
+.Test_tkb{
+    h1 ,h2{
+        font-family: cursive;
+        margin: 0;
+        padding: 10px 5px;
+    }
+    h3{
+        font-family: cursive;
+    }
+    Button{
+        margin: 5px 0;
+        font-family: cursive;
+    }
+}
+.TestBody{
+    display: flex;
+    justify-content: space-between;
+    .TestBody1{
+        width: 25%;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+    .ant-table-wrapper{
+        width: 85%;
+    }
+}

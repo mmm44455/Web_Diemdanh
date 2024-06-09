@@ -171,8 +171,6 @@ async def get_tkb(username: str):
         # Nếu có lỗi, trả về lỗi 500 và thông báo lỗi
         raise HTTPException(status_code=500, detail=str(e))
 
-
-
 class AttendanceRecord(BaseModel):
     MaSV: str
     name: str
@@ -212,6 +210,130 @@ async def get_attendance(date : str,MaMon: str,StartTime: str ,MaLop: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/liststudent/")
+async def get_atten(MaGV:str):
+    try:
+            connection = connect_to_database()
+            cursor = connection.cursor()
+            # Call the stored procedure
+            cursor.execute("exec ListStudent @MaGV = ?", MaGV)
+            listStudnet=[]
+            # Fetch all the results
+            rows = cursor.fetchall()
+            for row in rows:
+                listStu = {
+                       "MaSV" : row[0],
+                       "name": row[1],
+                       "gioitinh":row[2],
+                       "date" : row[3],
+                       "LopSv":row[4],
+                       "img":row[5] 
+                }
+                listStudnet.append(listStu)
+            connection.close()
+            return listStudnet
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/api/monhoc")
+async def get_monhoc():
+    try:
+        # Kết nối tới cơ sở dữ liệu
+        connection = connect_to_database()
+        cursor = connection.cursor()
+        
+        # Thực hiện stored procedure "HocKy"
+        cursor.execute("exec HocKy")
+        
+        # Lấy kết quả từ stored procedure
+        rows = cursor.fetchall()
+        listHK=[]
+        for row in rows:
+                listhk = {
+                       "HocKy" : row[0],
+                       "Nam": row[1]
+                }
+                listHK.append(listhk)
+        # Đóng kết nối
+        connection.close()
+
+        # Trả về danh sách kết quả dưới dạng JSON
+        return listHK
+    except Exception as e:
+        # Nếu có lỗi, trả về lỗi 500 và thông báo lỗi
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/getList/")
+async def get_ListTkb(MaGV : str,HocKy: str,Nam: str ):
+    try:
+            connection = connect_to_database()
+            cursor = connection.cursor()
+            # Call the stored procedure
+            cursor.execute("EXEC ClassTeacher @MaGV = ?, @HocKy = ?, @Nam = ?", MaGV,HocKy,Nam)
+            ListTkb = []
+            rows = cursor.fetchall()
+            for row in rows:
+                listClass = {
+                    "MaSV":row[0],
+                    "name":row[1],
+                    "HocKy":row[2],
+                    "Nam":row[3],
+                    "MonHocDetails":row[4]
+                }
+                ListTkb.append(listClass)
+            connection.close()
+            return ListTkb
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/getSubject/")
+async def get_Subject(MaGV : str,HocKy: str,Nam: str ):
+    try:
+            connection = connect_to_database()
+            cursor = connection.cursor()
+            # Call the stored procedure
+            cursor.execute("EXEC SubjectTeacher  @MaGV = ?, @HocKy = ?, @Nam = ?", MaGV,HocKy,Nam)
+            ListTkb = []
+            rows = cursor.fetchall()
+            for row in rows:
+                listClass = {
+                    "TenMon":row[0],
+                    "MaMon":row[1],
+                    "MaLop":row[2],
+                    "TenLop":row[3],
+                }
+                ListTkb.append(listClass)
+            connection.close()
+            return ListTkb
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/getListSubject/")
+async def get_ListSubject(MaGV : str,HocKy: str,Nam: str,MaMon:str,MaLop:str ):
+    try:
+            connection = connect_to_database()
+            cursor = connection.cursor()
+            # Call the stored procedure
+            cursor.execute("EXEC [dbo].[ListSubjectTeacher] @MaMon = ?,@MaLop=?,  @MaGV = ?, @Nam = ?,@HocKy = ?",MaMon,MaLop, MaGV,Nam,HocKy)
+            ListTkb = []
+            rows = cursor.fetchall()
+            for row in rows:
+                listClass = {
+                    "MaMon":row[0],
+                    "MaSV":row[1],
+                    "name":row[2],
+                    "TenMon":row[3],
+                    "HocKy":row[4],
+                    "Nam":row[5],
+                    "SoBuoiHoc":row[6],
+                    "BuoiDiemdanh":row[7]
+                }
+                ListTkb.append(listClass)
+            connection.close()
+            return ListTkb
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)

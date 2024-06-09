@@ -1,0 +1,28 @@
+/* style.css */
+.ant-table {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+  }
+ 
+  .ant-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    font-family: cursive;
+  }
+  
+  .ant-table td {
+    padding: 8px;
+    font-family: cursive;
+  }
+  
+  .ant-table-row:nth-child(odd) {
+    background-color: #f9f9f9;
+  }
+  
+  .ant-table-row:hover {
+    background-color: #e6f7ff;
+  }
+  .table_kq{
+    font-weight: 700;
+  }
+ 

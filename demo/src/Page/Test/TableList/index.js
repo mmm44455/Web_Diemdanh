@@ -1,6 +1,6 @@
 import { Table } from 'antd';
 import { format } from 'date-fns';
-
+import './style.css'
 const TestTable = ({ list, Start }) => {
   const evaluateArrivalTime = (ThoiGianDen, StartTime) => {
     if (!ThoiGianDen) return 'Vắng';
@@ -12,6 +12,18 @@ const TestTable = ({ list, Start }) => {
         return 'Đúng giờ';
     } else {
         return 'Đến muộn';
+    }
+  };
+  const getColorForResult = (result) => {
+    switch (result) {
+      case 'Đến sớm':
+        return { color: 'green' }; // Màu xanh cho Đến sớm
+      case 'Đúng giờ':
+        return { color: 'blue' }; // Màu xanh dương cho Đúng giờ
+      case 'Đến muộn':
+        return { color: 'rgb(255, 200, 62' }; // Màu vàng cho Đến muộn
+      default:
+        return { color: 'red' }; // Mặc định màu đỏ cho trường hợp khác
     }
   };
   const columns = [
@@ -50,13 +62,16 @@ const TestTable = ({ list, Start }) => {
       dataIndex: 'result',
       key: 'result',
       render: (text, record) => (
-        <span>{evaluateArrivalTime(record.ThoiGianDen, Start)}</span>
+        <span style={getColorForResult(evaluateArrivalTime(record.ThoiGianDen, Start))} className="table_kq">
+        {evaluateArrivalTime(record.ThoiGianDen, Start)}
+      </span>
       ),
     },
   ];
 
   return (
-    <Table
+    <Table 
+    className='table_list'
       dataSource={list}
       columns={columns}
       rowKey={(record, index) => index}
