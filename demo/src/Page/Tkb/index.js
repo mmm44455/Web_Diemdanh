@@ -79,9 +79,19 @@ const TKB = () => {
     setEventDetail(detail);
     setModalVisible(true);
   };
-  const handEventDiem = ()=>{
-      nav('/diemdanh')
-  }
+  const handEventDiem = () => {
+    if (eventDetail) {
+      const MaMon = `${eventDetail.MaMon}`;
+      const MaLop = `${eventDetail.MaLop}`;
+      const TenMon = `${eventDetail.TenMon}`;
+      const date = `${eventDetail.NgayHoc}`;
+      const startTime = ` ${eventDetail.StartTime}:00`;
+      const endTime = `${eventDetail.EndTime}:00`
+      nav('/diemdanh', { state: { MaLop: MaLop, MaMon: MaMon, TenMon: TenMon,date: date,startTime :startTime,endTime:endTime } });
+    } else {
+      console.error('Event details are not available');
+    }
+  };
   const handClickList = ()=>{
     if (eventDetail) {
       const startTime = ` ${eventDetail.StartTime}:00`;
@@ -144,6 +154,7 @@ const TKB = () => {
            {!isEventEnded(`${eventDetail.NgayHoc}T${eventDetail.EndTime}:00`) && (
              <Button type="primary" onClick={handEventDiem}>Điểm danh</Button>
            )}
+             <Button type="primary" onClick={handEventDiem}>Điểm danh</Button>
            <Button type="primary" danger onClick={handClickList} >Danh sách điểm danh</Button>
          </div>
          )}

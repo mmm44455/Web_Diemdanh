@@ -1,15 +1,25 @@
 import './sytle.css'
-const Card = ({MaSV,name,date,gioitinh,img})=>{
+import { format } from 'date-fns';
+const CardStudent = ({nameGV,Class,name,date,gioitinh,img})=>{
+    const yourDate = new Date(date); 
+    const formattedDate = format(yourDate, 'dd/MM/yyyy');
     return(
-        <div className="card">
+        <div className='card_face'>
+            <div className='Face'>
+                <img src={img}  alt='Hình ảnh của bạn'></img>
+            </div>
+            
         <div className="image-container">
-        <img src={img} className='Face' alt='Hình ảnh của bạn'></img>
-    </div>
-            <h4>Mã số sinh viên : {MaSV}</h4>
-            <p>Tên sinh viên :{name}</p>
+             <p>Tên sinh viên : {name}</p>
             <p>Giới tính : {gioitinh}</p>
-            <p>Ngày sinh : {date}</p>
+            <p>Ngày sinh : {formattedDate}</p>
+            <p>Lớp sinh viên : {Class}</p>
+            <p>Chủ nhiệm : {nameGV}</p>
         </div>
+        </div>
+        
+        
+       
     )
 }
-export default Card
+export default CardStudent

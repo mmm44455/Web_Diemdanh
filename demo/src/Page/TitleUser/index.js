@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 
 const TitleUser = () => {
   const [userInfo, setUserInfo] = useState(null);
-  const [error, setError] = useState(null);
   const username = localStorage.getItem('username');
   const role = localStorage.getItem('chuc vu');
 
@@ -15,7 +14,7 @@ const TitleUser = () => {
           setUserInfo(data);
         })
         .catch(error => {
-          setError(error.message);
+          console.log(error.message);
         });
     } else {
       setUserInfo({ UserType: role, UserName: username });
@@ -38,11 +37,7 @@ const TitleUser = () => {
           <p style={{ margin: '0 10px 0 0', fontFamily: 'cursive' }}>Sinh viên , {userInfo.UserName}</p>
         </div>
       )}
-      {role === 'admin' && (
-        <div>
-          <p style={{ margin: '0 10px 0 0', fontFamily: 'cursive' }}>Quản trị viên , {role}</p>
-        </div>
-      )}
+      
     </>
   );
 };

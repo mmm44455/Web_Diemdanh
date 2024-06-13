@@ -1,8 +1,9 @@
 import getListHK from "../../common/Api/ApiHK"; 
 import { useEffect, useState } from "react"
-import { Select, Button } from 'antd';
+import { Select} from 'antd';
 import getSubject from "../../common/Api/ApiGetSubject";
 import getListSubject from "../../common/Api/ApigetListSubject";
+import ReusableTable from "../../common/component/AntTable";
 const Default_page=()=>{
     const { Option } = Select;
     const role = localStorage.getItem('chuc vu')
@@ -44,7 +45,12 @@ const Default_page=()=>{
     const fetchListSubject = async()=>{
         try{
             const dataList  =await getListSubject(username,selectedHocKy,selectedNamHoc,selectedClassCode,selectedSubjectCode)
-            setDatalist(dataList)
+            const processedData = dataList.map(item => ({
+                ...item,
+                SoBuoiHoc: item.SoBuoiHoc === null ? 0 : item.SoBuoiHoc,
+                BuoiDiemdanh: item.BuoiDiemdanh === null ? 'Không học buổi nào' : item.BuoiDiemdanh
+            }));
+            setDatalist(processedData)
         }catch(error){
             console.log(error);
         }
@@ -75,11 +81,36 @@ const Default_page=()=>{
         setSelectedSubjectCode(selectedSubject.maMon);
     }
         };
-    
+    const columns = [
+        {
+            title: 'Mã SV',
+                dataIndex: 'MaSV',
+                key: 'MaSV',
+        },{
+                title: 'Họ và tên',
+                dataIndex: 'name',
+                key: 'name',
+        },
+        {
+            title: 'Môn học',
+            dataIndex: 'TenMon',
+            key: 'TenMon',
+        },
+        {
+            title: 'Số buổi học',
+            dataIndex: 'SoBuoiHoc',
+            key: 'SoBuoiHoc',
+        },
+        {
+            title: 'Số buổi đi học',
+            dataIndex: 'BuoiDiemdanh',
+            key: 'BuoiDiemdanh',
+        },
+    ]
     return(
         <>
-       <h1>Danh sách môn học kỳ này</h1> 
-       <div style={{ marginBottom: '16px' }}>
+       <h1 style={{ fontFamily: 'cursive',margin:'0' }}>Danh sách môn học kỳ này</h1> 
+       <div style={{ marginBottom: '16px',marginTop:'10px' }}>
                             <Select style={{ width: '200px', marginRight: '8px' }} placeholder="Chọn học kỳ" 
                             onChange={value => setSelectedHocKy(value)}>
                                 {hockyOptions.map(option => (
@@ -93,8 +124,7 @@ const Default_page=()=>{
                                 ))}
                             </Select>
                             {subjects.length > 0 && (
-                <div>
-                    <h2>Các môn học:</h2>
+                <div style={{ marginTop: '10px' }}>
                     <Select
                         style={{ width: '400px', marginRight: '8px' }}
                         placeholder="Chọn môn học"
@@ -107,7 +137,7 @@ const Default_page=()=>{
                         ))}
                     </Select>
                     <Select
-                        style={{ width: '400px', marginRight: '8px' }}
+                        style={{ width: '400px', marginRight: '8px' ,marginBottom:'8px' }}
                         placeholder="Chọn mã lớp"
                         onChange={value => setSelectedClassCode(value)}
                         disabled={!selectedSubjectName}
@@ -119,6 +149,7 @@ const Default_page=()=>{
                             </Option>
                         ))}
                     </Select>
+                    <ReusableTable columns={columns} data={listData}></ReusableTable>
                 </div>
             )}
          </div>

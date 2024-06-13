@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { Select, Button } from 'antd';
 import getListHK from "../../common/Api/ApiHK"; 
 import ListStu from "./ListStuDIem";
+import './style.css'
 const { Option } = Select;
 
 const Class = () => {
@@ -107,7 +108,7 @@ const Class = () => {
                             <Button type="primary" onClick={handleButtonClick}>Xuất danh sách</Button>
                         </div>
                         {showExportInfo ? (
-                            <div style={{ padding: '16px', background: '#f0f0f0', marginBottom: '16px' }}>
+                            <div style={{ padding: '16px', background: 'white', marginBottom: '16px' }}>
                                 <ListStu MaGV={localStorage.getItem('username')} HocKy = {selectedHocKy} Nam={selectedNamHoc}></ListStu>
                                 <Button type="primary" onClick={hideExportInfoPanel}>Đóng</Button>
                             </div>

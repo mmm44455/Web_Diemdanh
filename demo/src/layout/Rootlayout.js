@@ -3,6 +3,7 @@ import { Outlet, useNavigate} from 'react-router-dom';
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaAddressBook } from "react-icons/fa";
 import {  Card, Button,Tooltip  } from 'antd';
+import { IoMdLogOut } from "react-icons/io";
 import {
   DesktopOutlined,
   UserOutlined,
@@ -15,6 +16,7 @@ import Logo from '../common/component/Logo';
 import './Rootlay.css'
 import FormInfo from '../Page/FormInfo';
 import TitleUser from '../Page/TitleUser'
+import { FaCalendarAlt } from "react-icons/fa";
 const { Header, Content, Footer, Sider } = Layout;
 
 function getItem(label, key, icon,path) {
@@ -67,13 +69,13 @@ const RootLayout = () => {
     case 'Sinh vien':
       items = [
         getItem('Trang chủ', '1', <PieChartOutlined />, '/'),
-        getItem('Thời khoá biểu', '2', <DesktopOutlined />, '/tkb'),
+        getItem('Thời khoá biểu', '2', <FaCalendarAlt />, '/tkb'),
       ];
       break;
     case 'Giao vien':
       items = [
         getItem('Trang chủ', '1', <PieChartOutlined />, '/'),
-        getItem('Thời khoá biểu', '2', <DesktopOutlined />, '/tkb'),
+        getItem('Thời khoá biểu', '2', <FaCalendarAlt />, '/tkb'),
         getItem('Lớp chủ nhiệm', '3', <TeamOutlined />, '/class'),
         getItem('Điểm danh', '4', <UserOutlined />, '/diemdanh'),
         getItem('Danh sách môn học', '5',<FaAddressBook /> , '/default-page')
@@ -107,11 +109,14 @@ const RootLayout = () => {
             </div>
             <div className="user-profile">
               <TitleUser></TitleUser>
-              <Tooltip
+              {userRole==='admin'?(
+                <Button type="primary" danger onClick={onLogout} style={{marginRight:'10px'}}> <IoMdLogOut /> Đăng xuất</Button>
+              ):(
+                 <Tooltip
                 title={
                   <Card style={{ textAlign: 'center' }}>
                     <FormInfo />
-                    <Button type="primary" onClick={onLogout}>Đăng xuất</Button>
+                    <Button type="primary" onClick={onLogout} danger> <IoMdLogOut /> Đăng xuất</Button>
                   </Card>
                 }
                 open={showTooltip}
@@ -122,6 +127,8 @@ const RootLayout = () => {
               >
                 <FaRegUserCircle className="avatar" onClick={() => setShowTooltip(!showTooltip)} />
               </Tooltip>
+              )}
+             
             </div>
           </div>
         </Header>

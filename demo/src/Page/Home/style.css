@@ -1,3 +1,62 @@
-.HomePage{
-    font-family: cursive;
+.HomeStudent{
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    justify-content: flex-end;
+    
 }
+
+.HomePage,.schedule{
+font-family: "Roboto", "Helvetica", "Arial", sans-serif; 
+box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+width: 55%;
+h2{
+    border-bottom: 1px solid rgb(178, 178, 178) ;
+    background-color: aliceblue;
+    color: rgb(48, 105, 248);
+    padding: 10px;
+    margin: 0;
+}
+}
+.body-home{
+    padding:  0 20px 20px 20px;
+    display: flex;
+    justify-content: space-between;
+    img{
+        padding-top: 10px;
+        width: 120px;
+        height: 144px;
+    }
+}
+.schedule{
+  width: 100%;
+    padding: 10px;
+    background-color: #dffbff;
+    margin: 10px 0;
+}
+.home-user{
+    width: 45%;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.user-info{
+    width: 60%;
+}
+  
+  .user-info p {
+    display: flex;
+    justify-content: space-around;
+    padding: 5px 0;
+  }
+  
+  .user-info label {
+    flex: 1;
+    font-weight: bold;
+    padding-right: 16px;
+  }
+  
+  .user-info p {
+    flex: 2;
+  }
+  

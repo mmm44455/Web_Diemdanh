@@ -1,7 +1,6 @@
 import React from 'react';
 import { Table } from 'antd';
 import PropTypes from 'prop-types';
-import { format } from 'date-fns';
 const ReusableTable = ({ columns, data, rowKey }) => {
   return (
     <Table

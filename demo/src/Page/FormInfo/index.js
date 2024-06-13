@@ -6,7 +6,6 @@ import './sytle.css'
 
 const FormInfo = () => {
   const [userInfo, setUserInfo] = useState(null);
-  const [error, setError] = useState(null);
   const getUserRole = () => {
     const userRole = localStorage.getItem('chuc vu');
     return userRole;
@@ -22,10 +21,10 @@ const FormInfo = () => {
           setUserInfo(data);
         })
         .catch(error => {
-          setError(error.message);
+          console.log(error.message);
         });
     } else {
-      setError('No username found in localStorage');
+      console.log('No username found in localStorage');
     }
   }, []);
 
@@ -52,11 +51,7 @@ const FormInfo = () => {
           <h3> {userInfo.UserName}</h3>
         </div>
       )}
-      {userRole === 'admin' && (
-        <div>
-          <h3> {name}</h3>
-        </div>
-      )}
+      
     </div>
   );
 };

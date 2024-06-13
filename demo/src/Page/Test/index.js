@@ -19,7 +19,7 @@ const Test = () => {
     const nav = useNavigate()
 
     const convertToISOFormat = (dateTimeString) => {
-        const [date, time] = dateTimeString.split(' ');   
+        const [date] = dateTimeString.split(' ');   
         const [day, month, year] = date.split('/'); 
         const isoFormatString = `${year}-${month}-${day} `; 
         return format(new Date(isoFormatString), "yyyy-MM-dd");

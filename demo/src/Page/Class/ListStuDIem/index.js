@@ -8,7 +8,6 @@ import { FaFileExport } from "react-icons/fa";
 const ListStu = ({ MaGV, HocKy, Nam }) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [columns, setColumns] = useState([]);
 
     useEffect(() => {
@@ -41,7 +40,7 @@ const ListStu = ({ MaGV, HocKy, Nam }) => {
                     setLoading(false);
                 })
                 .catch(error => {
-                    setError(error);
+                console.log(error);
                     setLoading(false);
                 });
         }
@@ -61,7 +60,7 @@ const ListStu = ({ MaGV, HocKy, Nam }) => {
             },
         ];
 
-        const monHocFields = ['TenMon', 'MaMon', 'BuoiHoc', 'DiemDanh'];
+        const monHocFields = ['TenMon', 'MaMon', 'BuoiHoc', 'DiemDanh',];
 
         monHocFields.forEach(field => {
             columns.push({
@@ -69,19 +68,50 @@ const ListStu = ({ MaGV, HocKy, Nam }) => {
                 dataIndex: field,
                 key: field,
                 render: (text, record) => {
-                    return (
+                         return (
                         <ul>
                             {record.MonHocDetails.map((monHoc, index) => (
-                                <p key={index}>{monHoc[field]}</p>
+                                <p key={index}>
+                                     {field === 'DiemDanh' && monHoc[field] === '0' ? 'Không học buổi nào' : monHoc[field]}
+                                     </p>
                             ))}
                         </ul>
                     );
+                    
                 }
             });
         });
 
         return columns;
     };
+    const processedDataWithComments = data.map(student => {
+        let totalAbsent = 0;
+        let totalAttended = 0;
+    
+        student.MonHocDetails.forEach(detail => {
+            if (detail.DiemDanh === '0') {
+                totalAbsent++;
+            } else {
+                totalAttended++;
+            }
+        });
+    
+        let comment = '';
+        if (totalAttended === 0 && totalAbsent === 0) {
+            comment = 'Chưa đi học';
+        } else if (totalAttended === 0 && totalAbsent > 0) {
+            comment = 'Nghỉ học';
+        } else if (totalAbsent === 0) {
+            comment = 'Đi hết buổi';
+        } else {
+            comment = `Vắng ${totalAbsent} buổi`;
+        }
+    
+        return {
+            ...student,
+            Comment: comment
+        };
+    });
     const exportToExcel = () => {
         const headers = [
             "Mã SV",
@@ -89,25 +119,30 @@ const ListStu = ({ MaGV, HocKy, Nam }) => {
             "Tên môn",
             "Mã môn",
             "Buổi học",
-            "Điểm danh"
+            "Điểm danh",
+            "Nhận xét"
         ];
 
         // Tạo một đối tượng dùng để lưu trữ dữ liệu được gộp
         const mergedData = {};
 
         // Duyệt qua dữ liệu và gộp các môn học của cùng một sinh viên
-        data.forEach(student => {
+        processedDataWithComments.forEach(student => {
             const key = `${student.MaSV}-${student.name}`;
             if (!mergedData[key]) {
                 mergedData[key] = {
                     MaSV: student.MaSV,
                     name: student.name,
-                    MonHoc: []
+                    MonHoc: [],
                 };
             }
             student.MonHocDetails.forEach(detail => {
+                if (detail.DiemDanh === '0') {
+                    detail.DiemDanh = 'Không học buổi nào';
+                }
                 mergedData[key].MonHoc.push(detail);
             });
+            mergedData[key].Comment = student.Comment; 
         });
 
         // Chuyển đổi dữ liệu đã gộp sang định dạng cho file Excel
@@ -120,7 +155,8 @@ const ListStu = ({ MaGV, HocKy, Nam }) => {
                     detail.TenMon,
                     detail.MaMon,
                     detail.BuoiHoc,
-                    detail.DiemDanh
+                    detail.DiemDanh,
+                    detail.Comment
                 ]);
             }).flat()
         ];
@@ -156,7 +192,7 @@ const ListStu = ({ MaGV, HocKy, Nam }) => {
 
     return (
         <div>
-            <h1>Danh sách đi học từng môn {HocKy} năm {Nam} </h1>
+            <h1 style={{ fontFamily: 'cursive',margin:'0 0 10px 0',textAlign:'center' }}>Danh sách sinh viên đi học  </h1>
             <ReusableTable columns={columns} data={data} loading={loading} />
             <Button onClick={exportToExcel} type="primary" style={{ margin: 16, backgroundColor: "green" }}>
                 <FaFileExport /> Xuất file

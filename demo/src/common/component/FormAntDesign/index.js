@@ -1,6 +1,6 @@
 // EventDetailForm.js
 import React from 'react';
-import { Form, Input } from 'antd';
+import { Form } from 'antd';
 import './style.css'
 const { Item } = Form;
 

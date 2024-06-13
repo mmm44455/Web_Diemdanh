@@ -1,13 +1,20 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Form
 from typing import Optional, List
+from fastapi.responses import JSONResponse
 import pyodbc
 import jwt
+import align.detect_face
+import numpy as np
 from datetime import datetime, timedelta
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import File, UploadFile
 from pydantic import BaseModel
-
+import cv2
+from FaceRecognitionCamera import FaceRecognitionCamera
+import base64
 SECRET_KEY = "duycao12"
 TOKEN_EXPIRE_MINUTES = 30
+
 
 class User:
     def __init__(self, username: str, password: str,role:str):
@@ -35,7 +42,6 @@ def connect_to_database():
                           'DATABASE=Api_demo;'
                           'UID=sa;'
                           'PWD=123456')
-
 
 def get_user_by_username(username: str) -> Optional[User]:
     connection = connect_to_database()
@@ -98,8 +104,9 @@ async def get_user_info(username: str):
             user_info["Role"] = row[4]
             user_info["Class"] = row[5]
             user_info["Date"] = row[6]
-            user_info["ClassTeacher"] = row[7]
-            user_info["StudentClass"] = row[8]
+            user_info["img"] = row[7]
+            user_info["ClassTeacher"] = row[8]
+            user_info["StudentClass"] = row[9]
         elif user_type == "Giaovien":
             user_info["ID"] = row[1]
             user_info["UserName"] = row[2]
@@ -107,12 +114,10 @@ async def get_user_info(username: str):
             user_info["Role"] = row[4]
             user_info["Class"] = row[5]
             user_info["Date"] = row[6]
-            user_info["ClassTeacher"] = row[7]
-            user_info["StudentClass"] = row[8]
-        elif user_type == "Admin":
-            user_info["ID"] = row[1]
-            user_info["UserName"] = row[2]
-            user_info["Role"] = "admin"
+            user_info["img"] = row[7]
+            user_info["ClassTeacher"] = row[8]
+            user_info["StudentClass"] = row[9]
+       
     
     return user_info
 
@@ -333,6 +338,31 @@ async def get_ListSubject(MaGV : str,HocKy: str,Nam: str,MaMon:str,MaLop:str ):
             return ListTkb
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+face_recognition = FaceRecognitionCamera()
+@app.post("/face-recognition")
+async def upload_image(request: Request,  image_data: dict=None):
+    if image_data and "image_data" in image_data:
+        image_data = base64.b64decode(image_data["image_data"].split(",")[1])
+        nparr = np.frombuffer(image_data, np.uint8)
+        image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        faces = face_recognition.detect_faces(image)
+
+    # Trả về kết quả
+        return faces
+    else:
+        return JSONResponse(content={"message": "No image data received"}, status_code=400)
+
+@app.post("/student-attendance")
+async def updateInfo(request:Request,MaSV:str,MaLop:str,Starttime : str,EndTime:str,MaMon:str,TimeAtt:str):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute("EXEC sp_DiemDanhSinhVien @MaSV =?, @MaMon = ?, @MaLop = ?,@ThoiGianDiemDanh =?,@ThoiGianBatDau =?,@ThoiGianKetThuc = ?",MaSV,MaMon,MaLop,TimeAtt,Starttime,EndTime)
+    row = cursor.fetchall()
+    if row:
+            return {"Message": row[0][0]}
+    else:
+        return {"Message": "Có lỗi xảy ra"}
     
 if __name__ == "__main__":
     import uvicorn

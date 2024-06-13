@@ -15,4 +15,14 @@
     font-family: cursive;
 }
 /* Trong file CSS của bạn */
+.ant-tooltip .ant-tooltip-inner{
+    box-shadow: none;
+ 
+}
+:where(.css-dev-only-do-not-override-3rel02).ant-tooltip .ant-tooltip-inner{
+    background-color: transparent;
+}
+:where(.css-dev-only-do-not-override-3rel02).ant-card-bordered {
+    border: 1px solid #4e4a4a;
+}
 
