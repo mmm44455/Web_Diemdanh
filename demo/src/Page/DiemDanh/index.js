@@ -49,7 +49,7 @@ const FaceRecognition = () => {
             console.warn('Missing mssv or timeAtt data. Skipping post request.');
         }
     };
-
+    console.log(mess);
     useEffect(() => {
         if (isVideoStarted) {
             const intervalId = setInterval(detectFaces, 3000);

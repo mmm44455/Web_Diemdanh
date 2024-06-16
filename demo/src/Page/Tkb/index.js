@@ -6,7 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import viLocale from '@fullcalendar/core/locales/vi';
 import getUserInfo from '../../common/Api/ApiTkb';
 import { format } from 'date-fns';
-import { Modal,Button } from 'antd';
+import { Modal,Button,Spin } from 'antd';
 import EventDetailForm from '../../common/component/FormAntDesign'
 import './style.css';
 import { useNavigate} from 'react-router-dom';
@@ -115,7 +115,7 @@ const TKB = () => {
   return (
     <div>
       {loading ? (
-        <div>Loading...</div>
+          <Spin />
       ) : (
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -154,7 +154,6 @@ const TKB = () => {
            {!isEventEnded(`${eventDetail.NgayHoc}T${eventDetail.EndTime}:00`) && (
              <Button type="primary" onClick={handEventDiem}>Điểm danh</Button>
            )}
-             <Button type="primary" onClick={handEventDiem}>Điểm danh</Button>
            <Button type="primary" danger onClick={handClickList} >Danh sách điểm danh</Button>
          </div>
          )}

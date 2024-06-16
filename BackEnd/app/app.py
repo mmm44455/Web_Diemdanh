@@ -10,6 +10,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import File, UploadFile
 from pydantic import BaseModel
 import cv2
+import os
+import subprocess
 from FaceRecognitionCamera import FaceRecognitionCamera
 import base64
 SECRET_KEY = "duycao12"
@@ -106,7 +108,8 @@ async def get_user_info(username: str):
             user_info["Date"] = row[6]
             user_info["img"] = row[7]
             user_info["ClassTeacher"] = row[8]
-            user_info["StudentClass"] = row[9]
+            user_info["StudentClass"] = row[9],
+            user_info["Khoa"]=row[10]
         elif user_type == "Giaovien":
             user_info["ID"] = row[1]
             user_info["UserName"] = row[2]
@@ -116,9 +119,8 @@ async def get_user_info(username: str):
             user_info["Date"] = row[6]
             user_info["img"] = row[7]
             user_info["ClassTeacher"] = row[8]
-            user_info["StudentClass"] = row[9]
-       
-    
+            user_info["StudentClass"] = row[9],
+            user_info["Khoa"]=row[10]
     return user_info
 
     user = call_get_user_information_procedure(username)
@@ -267,7 +269,64 @@ async def get_monhoc():
     except Exception as e:
         # Nếu có lỗi, trả về lỗi 500 và thông báo lỗi
         raise HTTPException(status_code=500, detail=str(e))
-    
+@app.get("/api/khoa")
+async def get_khoa():
+    try:
+        # Kết nối tới cơ sở dữ liệu
+        connection = connect_to_database()
+        cursor = connection.cursor()
+        
+        # Thực hiện stored procedure "HocKy"
+        cursor.execute("exec Khoa")
+        
+        # Lấy kết quả từ stored procedure
+        rows = cursor.fetchall()
+        listHK=[]
+        for row in rows:
+                listhk = {
+                       "Khoa" : row[0],
+                       "LopSv": row[1]
+                }
+                listHK.append(listhk)
+        # Đóng kết nối
+        connection.close()
+
+        # Trả về danh sách kết quả dưới dạng JSON
+        return listHK
+    except Exception as e:
+        # Nếu có lỗi, trả về lỗi 500 và thông báo lỗi
+        raise HTTPException(status_code=500, detail=str(e))
+@app.get("/showStudent")
+async def get_showStudent(LopSv:str):
+    try:
+
+        connection = connect_to_database()
+        cursor = connection.cursor()
+        
+        # Thực hiện stored procedure "HocKy"
+        cursor.execute("exec showStudent @LopSv = ?",LopSv)
+        
+        # Lấy kết quả từ stored procedure
+        rows = cursor.fetchall()
+        listHK=[]
+        for row in rows:
+                listhk = {
+                       "MaSV" : row[0],
+                       "name": row[1],
+                       "date":row[2],
+                       "gioitinh":row[3],
+                       "email":row[7],
+                       "password":row[10]
+                }
+                listHK.append(listhk)
+        # Đóng kết nối
+        connection.close()
+
+        # Trả về danh sách kết quả dưới dạng JSON
+        return listHK
+    except Exception as e:
+        # Nếu có lỗi, trả về lỗi 500 và thông báo lỗi
+        raise HTTPException(status_code=500, detail=str(e))
 @app.get("/getList/")
 async def get_ListTkb(MaGV : str,HocKy: str,Nam: str ):
     try:
@@ -358,12 +417,117 @@ async def updateInfo(request:Request,MaSV:str,MaLop:str,Starttime : str,EndTime:
     connection = connect_to_database()
     cursor = connection.cursor()
     cursor.execute("EXEC sp_DiemDanhSinhVien @MaSV =?, @MaMon = ?, @MaLop = ?,@ThoiGianDiemDanh =?,@ThoiGianBatDau =?,@ThoiGianKetThuc = ?",MaSV,MaMon,MaLop,TimeAtt,Starttime,EndTime)
-    row = cursor.fetchall()
-    if row:
-            return {"Message": row[0][0]}
-    else:
-        return {"Message": "Có lỗi xảy ra"}
+    connection.commit()
+    return {"Message":"Attendance has been taken"}
     
+@app.post("/api/insertlogin")
+async def insertLogin(request: Request,username:str,password:str,Chucvu:str):
+    print(username,password,Chucvu)
+    try:
+        connection = connect_to_database()
+        cursor = connection.cursor()
+        cursor.execute("EXEC IntoLogin @username=?, @password=?, @Chucvu=?, @Action=?;", 
+                       (username, password, Chucvu, 'INSERT'))
+        connection.commit()
+        return {"message": "Thêm tài khoản thành công"}
+    except Exception as e:
+        # Nếu có lỗi, in ra lỗi để kiểm tra và trả về HTTPException
+        print(f"Lỗi khi thực thi câu lệnh SQL: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        connection.close()
+   
+@app.delete("/deleteLogin")
+async def deleteLogin(username:str):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute("EXEC IntoLogin @username=?, @password=?,@Chucvu = ?,  @Action = ?; ",username,None,None,'DELETE')
+    connection.commit()
+    return{"ban da xoa thanh cong"}
+
+@app.put("/updateLogin")
+async def updateLogin(username:str,password:str,Chucvu:str):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    cursor.execute("EXEC IntoLogin @username=?, @password=?,@Chucvu = ?,  @Action = ?; ",username,password,Chucvu,'UPDATE')
+    connection.commit()
+    return{"ban da sua thanh cong"}
+
+class ImageCaptureRequest(BaseModel):
+    student_id: str
+    image_data: str
+def save_image(image_data: str, student_id: str):
+    student_folder = os.path.join( r'D:\AI_PROJECT\ProJect_DiemDanh\BackEnd\app\Dataset\raw', student_id)  # Đường dẫn thư mục sinh viên
+    if not os.path.exists(student_folder):
+        os.makedirs(student_folder)
+
+    image_path = os.path.join(student_folder, datetime.now().strftime('%Y%m%d_%H%M%S%f') + '.jpg')
+    with open(image_path, "wb") as fh:
+        fh.write(base64.b64decode(image_data.split(",")[1]))
+
+    return image_path
+
+@app.post("/api/capture-image/")
+async def capture_image(request: ImageCaptureRequest):
+    student_id = request.student_id
+    image_data_base64 = request.image_data
+
+    # Decode base64 image data
+    try:
+        image_path = save_image(image_data_base64, student_id)
+        message = f"Saved image successfully at {image_path}"
+        return {"message": message}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save image: {str(e)}")
+def run_command(command):
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    stdout, stderr = process.communicate()
+    return stdout, stderr   
+@app.post("/api/align-dataset")
+async def align_dataset():
+    try:
+        align_command = "python BackEnd/app/align_dataset_mtcnn.py BackEnd/app/Dataset/raw BackEnd/app/Dataset/processed --image_size 160 --margin 32 --random_order --gpu_memory_fraction 0.25"
+        model_command = "python BackEnd/app/classifier.py TRAIN BackEnd/app/Dataset/processed BackEnd/app/Models/20180402-114759.pb BackEnd/app/Models/facemodel1.pkl --batch_size 1000"
+
+        align_output, align_error = run_command(align_command)
+        model_output, model_error = run_command(model_command)
+        if align_error:
+            raise Exception(f"Error in align dataset: {align_error.decode('utf-8')}")
+
+        return {"message": "Dataset aligned successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to align dataset: {str(e)}")
+
+@app.put("/api/updateStu")
+async def updateStu(MaSV:str,name:str,date:str,gioitinh:str):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("""
+            EXEC CRUDStuTea 
+                @name = ?,
+                @role = ?,
+                @date = ?,
+                @Operation = 'update',
+                @MaSV = ?,
+                @ObjectType = 'Sinh vien',
+                @email = '',
+                @MaGV = '',
+                @Khoa = '',
+                @LopSV = ''
+            """, (name, gioitinh, date, MaSV))
+        
+        connection.commit()
+        
+        return {"message": "Bạn đã sửa thông tin sinh viên thành công."}
+    
+    except Exception as e:
+        return {"error": f"Lỗi khi cập nhật sinh viên: {str(e)}"}
+    
+    finally:
+        cursor.close()
+        connection.close()
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)

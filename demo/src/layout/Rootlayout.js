@@ -4,6 +4,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { FaAddressBook } from "react-icons/fa";
 import {  Card, Button,Tooltip  } from 'antd';
 import { IoMdLogOut } from "react-icons/io";
+import { FaCentSign } from "react-icons/fa6";
 import {
   DesktopOutlined,
   UserOutlined,
@@ -63,7 +64,8 @@ const RootLayout = () => {
     case 'admin':
       items = [
         getItem('Trang chủ', '1', <PieChartOutlined />, '/'),
-        getItem('Tạo tài khoản', '2', <UserAddOutlined />, '/create-account'),
+        getItem('Tạo tài khoản', '2', <UserAddOutlined />, '/createAcc'),
+        getItem('Train mô hình', '3', <FaCentSign />, '/trainFace'),
       ];
       break;
     case 'Sinh vien':

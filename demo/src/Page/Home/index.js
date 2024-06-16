@@ -4,15 +4,24 @@ import getUserSchedule from '../../common/Api/ApiTkb'; // Import hàm API
 import './style.css'
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
-
+import { Button } from '@mui/material';
+import { Modal,Form, Input, DatePicker, Spin} from 'antd';
+import getUpdateStu from '../../common/Api/ApiUpdateStuTea'
+import { FaSave } from "react-icons/fa";
+import { MdCancelPresentation } from "react-icons/md";
+import getUpdateLogin  from '../../common/Api/ApiUpdateLogin'
+import moment from 'moment';
 const Home = () => {
   const [userInfo, setUserInfo] = useState(null);
   const Role = localStorage.getItem('chuc vu');
   const username = localStorage.getItem('username');
-  
+  const [form] = Form.useForm();
+
   const [classesThisWeek, setClassesThisWeek] = useState(0);
   const [upcomingClasses, setUpcomingClasses] = useState([]);
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible1,setModalVisible1]=useState(false)
+  const [newpassword,setNewpass]=useState('')
   useEffect(() => {
     // Lấy username từ localStorage
     if ( Role !== 'admin') {
@@ -55,7 +64,7 @@ const Home = () => {
     setClassesThisWeek(classes.length);
   };
   if (!userInfo) {
-    return <div>Loading...</div>;
+    return <div><Spin></Spin></div>;
   }
   const calculateUpcomingClasses = (schedule) => {
     const now = new Date();
@@ -68,6 +77,42 @@ const Home = () => {
     setUpcomingClasses(upcoming);
   };
 
+  const handUpdate =()=>{
+    setModalVisible(true)
+  }
+  const handleOk = () => {
+    form.validateFields().then(values => {
+      const updatedData = {
+        MaSV: values.MaSV,
+        name: values.name,
+        gioitinh: values.gioitinh,
+        date: values.date ? values.date.format('YYYY-MM-DD') : null,
+      };
+      console.log(updatedData);
+      getUpdateStu(updatedData.MaSV,updatedData.gioitinh,updatedData.date,updatedData.name)
+        .then(response => {
+          console.log('Cập nhật thành công:', response);
+          setModalVisible(false);
+          // Cập nhật lại thông tin người dùng sau khi chỉnh sửa
+          getUserInfo(username)
+            .then(data => setUserInfo(data))
+            .catch(error => console.log(error.message));
+        })
+        .catch(error => console.error('Lỗi khi cập nhật:', error));
+    }).catch(errorInfo => {
+      console.error('Lỗi khi validate:', errorInfo);
+    });
+  };
+  const handStuLogin =()=>{
+    setModalVisible1(true)
+  }
+
+  const handStuLogin1 = async()=>{
+    await getUpdateLogin(username,newpassword,Role).then(data=>{
+      alert("Đổi mật khẩu thành công ")
+      setModalVisible1(false)
+    })
+  }
   return (
     <div>
       {userInfo.UserType === 'Giaovien' && (
@@ -79,6 +124,7 @@ const Home = () => {
              <p><label>Họ và tên: </label>{userInfo.UserName}</p>
              <p><label>Mã giảng viên: </label>{userInfo.ID}</p>
              <p><label>Email: </label>{userInfo.Email}</p>
+             <Button onClick={handStuLogin} color='error' variant="contained" style={{marginLeft:10}}>Đổi mật khẩu </Button>
              </div>
             <img src={userInfo.img} alt=''></img>
             </div>
@@ -108,6 +154,41 @@ const Home = () => {
             )}
            </div>
              </div>
+             {
+          modalVisible1 && (
+            <Modal  open={modalVisible1} title="Đổi mật khẩu "onOk={handStuLogin1}
+             footer={[
+              <Button key="back" onClick={() => setModalVisible1(false)} color='error'variant="contained" style={{marginRight:10}}>
+               Hủy
+              </Button>,
+              <Button key="submit" variant="contained" onClick={handStuLogin1}>
+                 Đổi mật khẩu
+              </Button>,
+            ]} >
+              <Form form={form} layout="vertical" initialValues={{
+                MaSV: userInfo.ID,
+                name: userInfo.UserName
+              }}>
+                  <Form.Item name="MaSV" label="Mã giáo viên">
+         <Input disabled />
+            </Form.Item>
+            <Form.Item name="name" label="Tên giáo viên">
+            <Input disabled />
+          </Form.Item>
+
+          <Form.Item  label="Mật khẩu mới"  rules={[
+              {
+                required: true,
+                message: 'Vui lòng nhập mật khẩu mới ',
+              },
+            ]}>
+            <Input placeholder='nhập mật khẩu mới' onChange={(e)=>setNewpass(e.target.value)} />
+          </Form.Item>
+              </Form>
+
+            </Modal>
+          )
+        }
            </div>
       )}
       {userInfo.UserType === 'SinhVien' && (
@@ -118,13 +199,17 @@ const Home = () => {
           <div  className="user-info">
           <p><label>Họ và tên: </label>{userInfo.UserName}</p>
           <p><label>Mã số sinh viên: </label>{userInfo.ID}</p>
+          <p><label>Khoa: </label>{userInfo.Khoa}</p>
           <p><label>Email: </label>{userInfo.Email}</p>
           <p><label>Giới tính: </label>{userInfo.Role}</p>
           <p><label>Lớp sinh viên: </label>{userInfo.Class}</p>
           <p><label>Ngày sinh: </label>{format(new Date(userInfo.Date), 'dd/MM/yyyy')}</p>
           <p><label>Cố vấn học tập: </label>{userInfo.ClassTeacher}</p>
+          <Button onClick={handUpdate} color='success' variant="contained"> Sửa thông tin cá nhân </Button>
+          <Button onClick={handStuLogin} color='error' variant="contained" style={{marginLeft:10}}>Đổi mật khẩu </Button>
           </div>
           <img src={userInfo.img} alt=''></img>
+          
          </div>
         </div>
         <div className='home-user'>
@@ -138,14 +223,87 @@ const Home = () => {
           <Link to='/tkb'>Xem chi tiết </Link>
         </div>
           </div>
-         
+          {modalVisible && (
+        <Modal
+        open={modalVisible}
+          title="Cập nhật thông tin sinh viên "
+          onCancel={() => setModalVisible(false)}
+          onOk={handleOk}
+          footer={[
+          <Button key="back" onClick={() => setModalVisible(false)} color='error'variant="contained" style={{marginRight:10}}>
+           <MdCancelPresentation /> Hủy
+          </Button>,
+          <Button key="submit" variant="contained" onClick={handleOk}>
+            <FaSave /> Lưu
+          </Button>,
+        ]}
+        className='title-info'
+        >
+         <Form  form={form}  layout="vertical" name="student_info_form" initialValues={{
+                MaSV: userInfo.ID,
+                name: userInfo.UserName,
+                gioitinh: userInfo.Role,
+                date: userInfo.Date ? moment(userInfo.Date) : null 
+              }}>
+          <Form.Item name="MaSV" label="Mã sinh viên">
+         <Input disabled />
+            </Form.Item>
+            <Form.Item name="name" label="Tên sinh viên"
+            rules={[
+              {
+                required: true,
+                message: 'Vui lòng nhập tên sinh viên',
+              },
+            ]}
+          >
+            <Input placeholder="Nhập tên sinh viên" />
+          </Form.Item>
+        <Form.Item name="gioitinh" label="Giới tính ">
+        <Input placeholder="Giới tính"  />
+          </Form.Item>
+          <Form.Item name="date" label="Ngày sinh">
+          <DatePicker  format="DD/MM/YYYY" placeholder="Chọn ngày sinh"  />
+          </Form.Item>
+        </Form>
+        </Modal>)}
+        {
+          modalVisible1 && (
+            <Modal  open={modalVisible1} title="Đổi mật khẩu "onOk={handStuLogin1}
+             footer={[
+              <Button key="back" onClick={() => setModalVisible1(false)} color='error'variant="contained" style={{marginRight:10}}>
+               Hủy
+              </Button>,
+              <Button key="submit" variant="contained" onClick={handStuLogin1}>
+                 Đổi mật khẩu
+              </Button>,
+            ]} >
+              <Form form={form} layout="vertical" initialValues={{
+                MaSV: userInfo.ID,
+                name: userInfo.UserName
+              }}>
+                  <Form.Item name="MaSV" label="Mã sinh viên">
+         <Input disabled />
+            </Form.Item>
+            <Form.Item name="name" label="Tên sinh viên">
+            <Input disabled />
+          </Form.Item>
+
+          <Form.Item  label="Mật khẩu mới"  rules={[
+              {
+                required: true,
+                message: 'Vui lòng nhập mật khẩu mới ',
+              },
+            ]}>
+            <Input placeholder='nhập mật khẩu mới' onChange={(e)=>setNewpass(e.target.value)} />
+          </Form.Item>
+              </Form>
+
+            </Modal>
+          )
+        }
         </div>
       )}
-      {Role === 'admin' && (
-        <div className='HomePage'>
-          <h1>Thông tin admin</h1>           
-        </div>
-      )}
+    
     </div>
   );
 };

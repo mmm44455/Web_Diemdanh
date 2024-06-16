@@ -8,8 +8,8 @@ import pickle
 class FaceRecognitionCamera:
     def __init__(self):
         # Load paths to classifier and FaceNet model
-        self.CLASSIFIER_PATH = r'D:\AI_PROJECT\ProJect_DiemDanh\BackEnd\Face_AI\Models\facemodel.pkl' 
-        self.FACENET_MODEL_PATH = r'D:\AI_PROJECT\ProJect_DiemDanh\BackEnd\Face_AI\Models\20180402-114759.pb'
+        self.CLASSIFIER_PATH = r'D:\AI_PROJECT\ProJect_DiemDanh\BackEnd\app\Models\facemodel1.pkl' 
+        self.FACENET_MODEL_PATH = r'D:\AI_PROJECT\ProJect_DiemDanh\BackEnd\app\Models\20180402-114759.pb'
 
         # Load classifier model
         with open(self.CLASSIFIER_PATH, 'rb') as file:

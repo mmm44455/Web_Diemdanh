@@ -1,25 +1,26 @@
-@app.get("/liststudent/",response_model=List[AttendanceRecord])
-async def get_atten(MaGV:str):
-    try:
-            connection = connect_to_database()
-            cursor = connection.cursor()
-            # Call the stored procedure
-            cursor.execute("exec ListStudent @MaGV = ?", MaGV)
-            listStudnet=[]
-            # Fetch all the results
-            rows = cursor.fetchall()
-            for row in rows:
-                print(row)
-                listStu = {
-                       "MaSV" : row[0],
-                       "name": row[1],
-                       "gioitinh":row[2],
-                       "date" : row[3],
-                       "LopSv":row[4],
-                       "img":row[5] 
-                }
-                listStudnet.append(listStu)
-            connection.close()
-            return listStudnet
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+ try:
+        # Connect to database
+        connection = connect_to_database()
+        cursor = connection.cursor()
+
+        # Execute stored procedure
+        cursor.execute("EXEC sp_DiemDanhSinhVien @MaSV = ?, @MaMon = ?, @MaLop = ?, @ThoiGianDiemDanh = ?, @ThoiGianBatDau = ?, @ThoiGianKetThuc = ?", MaSV, MaMon, MaLop, TimeAtt, Starttime, EndTime)
+        connection.commit()
+
+        # Check for any rows returned
+        rows = cursor.fetchall()
+
+        if row:
+            message = rows[0][0]
+            return {"Message": message}
+        else:
+            return {"Message": "Không có dữ liệu trả về"}
+
+    except pyodbc.Error as e:
+        print(f"SQL execution error: {e}")
+        raise
+
+    finally:
+        # Ensure cursor and connection are closed in all cases
+        cursor.close()
+        connection.close()
