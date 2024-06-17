@@ -63,7 +63,7 @@ const RootLayout = () => {
   switch (userRole) {
     case 'admin':
       items = [
-        getItem('Trang chủ', '1', <PieChartOutlined />, '/'),
+        getItem('Danh sách sinh viên ', '1', <PieChartOutlined />, '/listStu'),
         getItem('Tạo tài khoản', '2', <UserAddOutlined />, '/createAcc'),
         getItem('Train mô hình', '3', <FaCentSign />, '/trainFace'),
       ];

@@ -13,6 +13,7 @@ import Diemdanh from "../Page/DiemDanh";
 import DefaultPage from "../Page/Default-page"
 import CreateAcc from "../Page/CreateAcc"
 import TrainFace from "../Page/TrainFace";
+import Stulist from "../Page/ListStu"
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element:<Home></Home>
+      },
+      {
+        path:"/listStu",
+        element:<Stulist ></Stulist>
       },
       {
         path: "/tkb",

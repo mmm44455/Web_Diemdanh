@@ -86,9 +86,10 @@ const Home = () => {
         MaSV: values.MaSV,
         name: values.name,
         gioitinh: values.gioitinh,
-        date: values.date ? values.date.format('YYYY-MM-DD') : null,
+        date: values.date ? values.date.format('YYYY-MM-DD') : null
       };
       console.log(updatedData);
+      
       getUpdateStu(updatedData.MaSV,updatedData.gioitinh,updatedData.date,updatedData.name)
         .then(response => {
           console.log('Cập nhật thành công:', response);
@@ -167,7 +168,7 @@ const Home = () => {
             ]} >
               <Form form={form} layout="vertical" initialValues={{
                 MaSV: userInfo.ID,
-                name: userInfo.UserName
+                name: userInfo.UserName,
               }}>
                   <Form.Item name="MaSV" label="Mã giáo viên">
          <Input disabled />

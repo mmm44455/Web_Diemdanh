@@ -155,6 +155,7 @@ const TKB = () => {
              <Button type="primary" onClick={handEventDiem}>Điểm danh</Button>
            )}
            <Button type="primary" danger onClick={handClickList} >Danh sách điểm danh</Button>
+           <Button type="primary" onClick={handEventDiem}>Điểm danh</Button>
          </div>
          )}
         </Modal>

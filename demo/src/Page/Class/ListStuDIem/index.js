@@ -64,7 +64,7 @@ const ListStu = ({ MaGV, HocKy, Nam }) => {
 
         monHocFields.forEach(field => {
             columns.push({
-                title: field === 'TenMon' ? 'Tên môn' : field === 'MaMon' ? 'Mã môn' : field === 'BuoiHoc' ? 'Buổi học' : 'Điểm danh',
+                title: field === 'TenMon' ? 'Tên môn' : field === 'MaMon' ? 'Mã môn' : field === 'BuoiHoc' ? 'Buổi học' : 'Số buổi đi học ',
                 dataIndex: field,
                 key: field,
                 render: (text, record) => {
@@ -119,7 +119,7 @@ const ListStu = ({ MaGV, HocKy, Nam }) => {
             "Tên môn",
             "Mã môn",
             "Buổi học",
-            "Điểm danh",
+            "Số buổi đi học",
             "Nhận xét"
         ];
 

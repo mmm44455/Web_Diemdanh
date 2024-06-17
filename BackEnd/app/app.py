@@ -527,6 +527,35 @@ async def updateStu(MaSV:str,name:str,date:str,gioitinh:str):
     finally:
         cursor.close()
         connection.close()
+@app.delete("/api/deleteStu")
+async def updateStu(MaSV:str):
+    connection = connect_to_database()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("""
+            EXEC CRUDStuTea 
+                @MaSV = ?,
+                @name = '',
+                @role = '',
+                @date = '',
+                @Operation = 'delete',
+                @ObjectType = 'Sinh vien',
+                @email = '',
+                @MaGV = '',
+                @Khoa = '',
+                @LopSV = ''
+            """, (MaSV))
+        
+        connection.commit()
+        
+        return {"message": "Bạn đã xoá thông tin sinh viên thành công."}
+    
+    except Exception as e:
+        return {"error": f"Lỗi khi cập nhật sinh viên: {str(e)}"}
+    
+    finally:
+        cursor.close()
+        connection.close()
 
 if __name__ == "__main__":
     import uvicorn
